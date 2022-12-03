@@ -1,0 +1,10 @@
+Language: Java
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AlignTrailingComments: true
+ColumnLimit: 80
+IndentCaseLabels: true
+SpaceAfterCStyleCast: true
