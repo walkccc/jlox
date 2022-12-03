@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# Generated Java objects
+*.class
+
+# Generated AST
+Expr.java
+Stmt.java
+
+# Testing .lox file
+test.lox
