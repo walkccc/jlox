@@ -9,6 +9,9 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class Lox {
+  // Makes the field static so that successive calls to `run()` inside a REPL
+  // session reuse the same interpreter.
+  private static final Interpreter interpreter = new Interpreter();
   static boolean hadError = false;
   static boolean hadRuntimeError = false;
 
@@ -60,7 +63,7 @@ public class Lox {
     if (hadError)
       return;
 
-    System.out.println(new AstPrinter().print(expression));
+    interpreter.interpret(expression);
   }
 
   static void error(int line, String message) {
