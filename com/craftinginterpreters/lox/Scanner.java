@@ -66,8 +66,29 @@ class Scanner {
         // Ignore whitespace.
         break;
       case '\n': ++line; break;
+      case '"': string(); break;
       default: Lox.error(line, "Unexpected character."); break;
     }
+  }
+
+  private void string() {
+    while (peek() != '"' && !isAtEnd()) {
+      if (peek() == '\n')
+        ++line;
+      advance();
+    }
+
+    if (isAtEnd()) {
+      Lox.error(line, "Unterminated string.");
+      return;
+    }
+
+    // The closing ".
+    advance();
+
+    // Trim the surrounding quotes.
+    String value = source.substring(start + 1, current - 1);
+    addToken(TokenType.STRING, value);
   }
 
   // When we reach, for example, '!', we jump to its switch case. That means we
