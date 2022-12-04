@@ -78,6 +78,15 @@ class Scanner {
           // A comment goes until the end of the line.
           while (!isAtEnd() && peek() != '\n')
             advance();
+        } else if (match('*')) {
+          // C-style /* ... */ block comments.
+          while (!isAtEnd() && (peek() != '*' || peekNext() != '/')) {
+            if (peek() == '\n')
+              ++line;
+            advance();
+          }
+          advance(); // Consumes '*'
+          advance(); // Consumes '/'
         } else {
           addToken(TokenType.SLASH);
         }
