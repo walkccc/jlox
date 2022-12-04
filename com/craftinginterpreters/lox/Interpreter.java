@@ -22,6 +22,16 @@ public class Interpreter implements Expr.Visitor<Object> {
     }
   }
 
+  // Lox follows Ruby's simple rule: false and nil are falsey, and everything
+  // else is truthy.
+  private boolean isTruthy(Object object) {
+    if (object == null)
+      return false;
+    if (object instanceof Boolean)
+      return (boolean) object;
+    return true;
+  }
+
   private Object evaluate(Expr expr) {
     return expr.accept(this);
   }
