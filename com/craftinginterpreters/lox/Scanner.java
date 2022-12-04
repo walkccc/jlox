@@ -39,8 +39,32 @@ class Scanner {
       case '+': addToken(TokenType.PLUS); break;
       case ';': addToken(TokenType.SEMICOLON); break;
       case '*': addToken(TokenType.STAR); break;
+      case '!':
+        addToken(match('=') ? TokenType.BANG_EQUAL : TokenType.BANG);
+        break;
+      case '=':
+        addToken(match('=') ? TokenType.EQUAL_EQUAL : TokenType.EQUAL);
+        break;
+      case '<':
+        addToken(match('=') ? TokenType.LESS_EQUAL : TokenType.LESS);
+        break;
+      case '>':
+        addToken(match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER);
+        break;
       default: Lox.error(line, "Unexpected character."); break;
     }
+  }
+
+  // When we reach, for example, '!', we jump to its switch case. That means we
+  // know the lexeme starts with '!'. Then, we look at the next character to
+  // determine if we're on a "!=" or merely a '!'.
+  private boolean match(char expected) {
+    if (isAtEnd())
+      return false;
+    if (source.charAt(current) != expected)
+      return false;
+    ++current;
+    return true;
   }
 
   private boolean isAtEnd() {
