@@ -1,5 +1,6 @@
 package com.craftinginterpreters.lox;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class Parser {
@@ -12,12 +13,35 @@ class Parser {
     this.tokens = tokens;
   }
 
-  Expr parse() {
-    try {
-      return expression();
-    } catch (ParseError error) {
-      return null;
+  // program -> statement* EOF ;
+  List<Stmt> parse() {
+    List<Stmt> statements = new ArrayList<>();
+    while (!isAtEnd()) {
+      statements.add(statement());
     }
+    return statements;
+  }
+
+  // statement -> printStatement
+  //            | exprStatement ;
+  private Stmt statement() {
+    if (match(TokenType.PRINT))
+      return printStatement();
+    return expressionStatement();
+  }
+
+  // printStatement -> "print" expression ";" ;
+  private Stmt printStatement() {
+    Expr value = expression();
+    consume(TokenType.SEMICOLON, "Expect ';' after value.");
+    return new Stmt.Print(value);
+  }
+
+  // exprStatement -> expression ";" ;
+  private Stmt expressionStatement() {
+    Expr expr = expression();
+    consume(TokenType.SEMICOLON, "Expect ';' after expr.");
+    return new Stmt.Expression(expr);
   }
 
   // expression -> equality ;
