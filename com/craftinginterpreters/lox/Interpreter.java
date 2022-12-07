@@ -133,8 +133,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   // bind the variable to that value.
   @Override
   public Void visitVarStmt(Stmt.Var stmt) {
-    Object value = stmt.initializer == null ? null : evaluate(stmt.initializer);
-    environment.define(stmt.name.lexeme, value);
+    if (stmt.initializer == null) {
+      environment.addUndefinedVariable(stmt.name.lexeme);
+    } else {
+      Object value = evaluate(stmt.initializer);
+      environment.define(stmt.name.lexeme, value);
+    }
     return null;
   }
 
