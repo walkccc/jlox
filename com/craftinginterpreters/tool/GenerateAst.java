@@ -13,14 +13,14 @@ public class GenerateAst {
     }
     String outputDir = args[0];
     defineAst(outputDir, "Expr",
-              Arrays.asList("Assign   : Token name, Expr value",
-                            "Binary   : Expr left, Token operator, Expr right",
-                            "Grouping : Expr expression",
-                            "Literal  : Object value",
-                            "Logical  : Expr left, Token operator, Expr right",
-                            "Unary    : Token operator, Expr right",
-                            "Variable : Token name"),
-              /*shouldImportList=*/false);
+              Arrays.asList(
+                  "Assign   : Token name, Expr value",
+                  "Binary   : Expr left, Token operator, Expr right",
+                  "Call     : Expr callee, Token paren, List<Expr> arguments",
+                  "Grouping : Expr expression", "Literal  : Object value",
+                  "Logical  : Expr left, Token operator, Expr right",
+                  "Unary    : Token operator, Expr right",
+                  "Variable : Token name"));
 
     defineAst(
         outputDir, "Stmt",
@@ -30,22 +30,18 @@ public class GenerateAst {
             "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
             "Print      : Expr expression",
             "Var        : Token name, Expr initializer",
-            "While      : Expr condition, Stmt body"),
-        /*shouldImportList=*/true);
+            "While      : Expr condition, Stmt body"));
   }
 
   private static void defineAst(String outputDir, String baseName,
-                                List<String> types, boolean shouldImportList)
-      throws IOException {
+                                List<String> types) throws IOException {
     String path = outputDir + "/" + baseName + ".java";
     PrintWriter writer = new PrintWriter(path, "UTF-8");
 
     writer.println("package com.craftinginterpreters.lox;");
     writer.println();
-    if (shouldImportList) {
-      writer.println("import java.util.List;");
-      writer.println();
-    }
+    writer.println("import java.util.List;");
+    writer.println();
     writer.println("abstract class " + baseName + " {");
 
     defineVisitor(writer, baseName, types);
