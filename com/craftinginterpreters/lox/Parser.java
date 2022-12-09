@@ -13,13 +13,34 @@ class Parser {
     this.tokens = tokens;
   }
 
-  // program -> statement* EOF ;
+  // program -> declaration* EOF ;
   List<Stmt> parse() {
     List<Stmt> statements = new ArrayList<>();
     while (!isAtEnd()) {
-      statements.add(statement());
+      statements.add(declaration());
     }
     return statements;
+  }
+
+  // declaration -> varDeclaration
+  //              | statement ;
+  private Stmt declaration() {
+    try {
+      if (match(TokenType.VAR))
+        return varDeclaration();
+      return statement();
+    } catch (ParseError error) {
+      synchronize();
+      return null;
+    }
+  }
+
+  // varDeclaration -> "var" IDENTIFIER ( "=" expression )? ";" ;
+  private Stmt varDeclaration() {
+    Token name = consume(TokenType.IDENTIFIER, "Expect variable name.");
+    Expr initializer = match(TokenType.EQUAL) ? expression() : null;
+    consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+    return new Stmt.Var(name, initializer);
   }
 
   // statement -> printStatement
@@ -107,7 +128,8 @@ class Parser {
 
   // primary -> NUMBER | STRING
   //          | "true" | "false" | "nil"
-  //          | "(" expression ")" ;
+  //          | "(" expression ")"
+  //          | IDENTIFIER ;
   private Expr primary() {
     if (match(TokenType.NUMBER, TokenType.STRING))
       return new Expr.Literal(previous().literal);
@@ -126,6 +148,9 @@ class Parser {
       consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
       return new Expr.Grouping(expr);
     }
+
+    if (match(TokenType.IDENTIFIER))
+      return new Expr.Variable(previous());
 
     throw error(peek(), "Expect expression.");
   }
