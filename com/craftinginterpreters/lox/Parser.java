@@ -13,8 +13,16 @@ class Parser {
     this.tokens = tokens;
   }
 
+  Expr parseExpression() {
+    try {
+      return expression();
+    } catch (ParseError error) {
+      return null;
+    }
+  }
+
   // program -> declaration* EOF ;
-  List<Stmt> parse() {
+  List<Stmt> parseStatements() {
     List<Stmt> statements = new ArrayList<>();
     while (!isAtEnd()) {
       statements.add(declaration());
