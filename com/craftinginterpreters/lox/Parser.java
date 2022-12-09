@@ -109,9 +109,9 @@ class Parser {
   }
 
   // assignment -> IDENTIFIEER "=" assignment
-  //             | equality ;
+  //             | or ;
   private Expr assignment() {
-    Expr expr = equality();
+    Expr expr = or();
     if (match(TokenType.EQUAL)) {
       Token equals = previous();
       Expr value = assignment();
@@ -120,6 +120,28 @@ class Parser {
         return new Expr.Assign(name, value);
       }
       error(equals, "Invalid assignment target.");
+    }
+    return expr;
+  }
+
+  // or -> and ( "or" and )* ;
+  private Expr or() {
+    Expr expr = and();
+    while (match(TokenType.OR)) {
+      Token operator = previous();
+      Expr right = and();
+      expr = new Expr.Logical(expr, operator, right);
+    }
+    return expr;
+  }
+
+  // and -> equality ( "and" equality )* ;
+  private Expr and() {
+    Expr expr = equality();
+    while (match(TokenType.AND)) {
+      Token operator = previous();
+      Expr right = equality();
+      expr = new Expr.Logical(expr, operator, right);
     }
     return expr;
   }
