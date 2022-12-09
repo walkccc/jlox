@@ -108,6 +108,14 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
   }
 
   @Override
+  public Void visitBlockStmt(Stmt.Block stmt) {
+    // To execute a block, we create a new environment for the block's scope and
+    // pass it off to this other method.
+    executeBlock(stmt.statements, new Environment(environment));
+    return null;
+  }
+
+  @Override
   public Void visitExpressionStmt(Stmt.Expression stmt) {
     evaluate(stmt.expression);
     return null;
@@ -183,5 +191,22 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
   private void execute(Stmt stmt) {
     stmt.accept(this);
+  }
+
+  // To execute code within a given scope, this method updates the interpreter's
+  // environment field, visits all of the statements, and then restores the
+  // previous value. As is always good practice in Java, it restores the
+  // previous environment using a finally clause. That way it gets restored even
+  // if an exception is thrown.
+  private void executeBlock(List<Stmt> statements, Environment environment) {
+    Environment previous = this.environment;
+    try {
+      this.environment = environment;
+      for (Stmt statement : statements) {
+        execute(statement);
+      }
+    } finally {
+      this.environment = previous;
+    }
   }
 }

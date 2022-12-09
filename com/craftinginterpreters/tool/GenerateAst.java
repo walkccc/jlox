@@ -18,21 +18,29 @@ public class GenerateAst {
                             "Grouping : Expr expression",
                             "Literal  : Object value",
                             "Unary    : Token operator, Expr right",
-                            "Variable : Token name"));
+                            "Variable : Token name"),
+              /*shouldImportList=*/false);
 
     defineAst(outputDir, "Stmt",
-              Arrays.asList("Expression : Expr expression",
+              Arrays.asList("Block      : List<Stmt> statements",
+                            "Expression : Expr expression",
                             "Print      : Expr expression",
-                            "Var        : Token name, Expr initializer"));
+                            "Var        : Token name, Expr initializer"),
+              /*shouldImportList=*/true);
   }
 
   private static void defineAst(String outputDir, String baseName,
-                                List<String> types) throws IOException {
+                                List<String> types, boolean shouldImportList)
+      throws IOException {
     String path = outputDir + "/" + baseName + ".java";
     PrintWriter writer = new PrintWriter(path, "UTF-8");
 
     writer.println("package com.craftinginterpreters.lox;");
     writer.println();
+    if (shouldImportList) {
+      writer.println("import java.util.List;");
+      writer.println();
+    }
     writer.println("abstract class " + baseName + " {");
 
     defineVisitor(writer, baseName, types);

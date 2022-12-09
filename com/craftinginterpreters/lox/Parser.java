@@ -44,10 +44,13 @@ class Parser {
   }
 
   // statement -> printStatement
-  //            | exprStatement ;
+  //            | exprStatement
+  //            | block ;
   private Stmt statement() {
     if (match(TokenType.PRINT))
       return printStatement();
+    if (match(TokenType.LEFT_BRACE))
+      return new Stmt.Block(block());
     return expressionStatement();
   }
 
@@ -63,6 +66,19 @@ class Parser {
     Expr expr = expression();
     consume(TokenType.SEMICOLON, "Expect ';' after expr.");
     return new Stmt.Expression(expr);
+  }
+
+  // block -> "{" declaration* "}" ;
+  private List<Stmt> block() {
+    List<Stmt> statements = new ArrayList<>();
+    // The loop also has an explicit check for `isAtEnd()` since we have to be
+    // careful to avoid infinite loops, even when parsing invalid code. If the
+    // user forgets a closing `}`, the parser needs to not get stuck.
+    while (!check(TokenType.RIGHT_BRACE) && !isAtEnd()) {
+      statements.add(declaration());
+    }
+    consume(TokenType.RIGHT_BRACE, "Expect '}' after block.");
+    return statements;
   }
 
   // expression -> assignment ;
