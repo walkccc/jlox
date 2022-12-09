@@ -52,11 +52,14 @@ class Parser {
   }
 
   // statement -> printStatement
+  //            | ifStatement
   //            | exprStatement
   //            | block ;
   private Stmt statement() {
     if (match(TokenType.PRINT))
       return printStatement();
+    if (match(TokenType.IF))
+      return ifStatement();
     if (match(TokenType.LEFT_BRACE))
       return new Stmt.Block(block());
     return expressionStatement();
@@ -67,6 +70,17 @@ class Parser {
     Expr value = expression();
     consume(TokenType.SEMICOLON, "Expect ';' after value.");
     return new Stmt.Print(value);
+  }
+
+  // ifStatement -> "if" "(" expression ")" statement
+  //              ( "else" statement )? ;
+  private Stmt ifStatement() {
+    consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
+    Expr condition = expression();
+    consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
+    Stmt thenBranch = statement();
+    Stmt elseBranch = match(TokenType.ELSE) ? statement() : null;
+    return new Stmt.If(condition, thenBranch, elseBranch);
   }
 
   // exprStatement -> expression ";" ;

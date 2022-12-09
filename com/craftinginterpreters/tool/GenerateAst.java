@@ -21,12 +21,15 @@ public class GenerateAst {
                             "Variable : Token name"),
               /*shouldImportList=*/false);
 
-    defineAst(outputDir, "Stmt",
-              Arrays.asList("Block      : List<Stmt> statements",
-                            "Expression : Expr expression",
-                            "Print      : Expr expression",
-                            "Var        : Token name, Expr initializer"),
-              /*shouldImportList=*/true);
+    defineAst(
+        outputDir, "Stmt",
+        Arrays.asList(
+            "Block      : List<Stmt> statements",
+            "Expression : Expr expression",
+            "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
+            "Print      : Expr expression",
+            "Var        : Token name, Expr initializer"),
+        /*shouldImportList=*/true);
   }
 
   private static void defineAst(String outputDir, String baseName,
