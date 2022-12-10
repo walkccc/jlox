@@ -4,7 +4,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
-  private Environment environment = new Environment();
+  // A fixed reference to the outermost global environment.
+  final Environment globalEnvironment = new Environment();
+  // The `environment` field in the interpreter changes as we enter and exit
+  // local scopes. It tracks the current environment.
+  private Environment environment = globalEnvironment;
+
+  Interpreter() {
+    // Defines a variable `clock`. Its value is a Java anonymous class that
+    // implements LoxCallable.
+    globalEnvironment.define("clock", new LoxCallable() {
+      @Override
+      public int arity() {
+        return 0;
+      }
+
+      @Override
+      public Object call(Interpreter interpreter, List<Object> arguments) {
+        return (double) System.currentTimeMillis() / 1000.0;
+      }
+
+      @Override
+      public String toString() {
+        return "<native fn>";
+      }
+    });
+  }
 
   void interpret(Expr expression) {
     try {
