@@ -87,6 +87,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     for (Expr argument : expr.arguments) {
       arguments.add(evaluate(argument));
     }
+    // Strings aren't callable in Lox. The runtime representation of a Lox
+    // string is a Java string, so when we cast that to `LoxCallable`, the JVM
+    // will throw a `ClassCastException`.
+    if (!(callee instanceof LoxCallable)) {
+      throw new RuntimeError(expr.paren, "Can only call functions and classes");
+    }
     LoxCallable function = (LoxCallable) callee;
     return function.call(this, arguments);
   }
